@@ -18,6 +18,8 @@ export type SkillInstallSpec = {
 
 export type MoltbotSkillMetadata = {
   always?: boolean;
+  mandatory?: boolean;
+  category?: string;
   skillKey?: string;
   primaryEnv?: string;
   emoji?: string;

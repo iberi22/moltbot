@@ -115,25 +115,63 @@ export async function setupSkills(
   const installable = missing.filter(
     (skill) => skill.install.length > 0 && skill.missing.bins.length > 0,
   );
-  if (installable.length > 0) {
+
+  const mandatoryInstallable = installable.filter((s) => s.mandatory);
+  const optionalInstallable = installable.filter((s) => !s.mandatory);
+
+  const skillsToInstall: string[] = [];
+
+  if (mandatoryInstallable.length > 0) {
+    await prompter.note(
+      mandatoryInstallable.map((s) => `- ${s.name} (${formatSkillHint(s)})`).join("\n"),
+      "Required skills",
+    );
+    const confirmRequired = await prompter.confirm({
+      message: "Install required skills now?",
+      initialValue: true,
+    });
+    if (confirmRequired) {
+      skillsToInstall.push(...mandatoryInstallable.map((s) => s.name));
+    }
+  }
+
+  if (optionalInstallable.length > 0) {
+    // Sort by category (Development first), then name
+    optionalInstallable.sort((a, b) => {
+      const catA = a.category === "development" ? 0 : 1;
+      const catB = b.category === "development" ? 0 : 1;
+      if (catA !== catB) return catA - catB;
+      return a.name.localeCompare(b.name);
+    });
+
     const toInstall = await prompter.multiselect({
-      message: "Install missing skill dependencies",
+      message: "Install optional skill dependencies",
       options: [
         {
           value: "__skip__",
           label: "Skip for now",
-          hint: "Continue without installing dependencies",
+          hint: "Continue without installing optional dependencies",
         },
-        ...installable.map((skill) => ({
-          value: skill.name,
-          label: `${skill.emoji ?? "🧩"} ${skill.name}`,
-          hint: formatSkillHint(skill),
-        })),
+        ...optionalInstallable.map((skill) => {
+          let label = `${skill.emoji ?? "🧩"} ${skill.name}`;
+          if (skill.category === "development") {
+            label = `[Dev] ${label}`;
+          }
+          return {
+            value: skill.name,
+            label,
+            hint: formatSkillHint(skill),
+          };
+        }),
       ],
     });
 
     const selected = (toInstall as string[]).filter((name) => name !== "__skip__");
-    for (const name of selected) {
+    skillsToInstall.push(...selected);
+  }
+
+  if (skillsToInstall.length > 0) {
+    for (const name of skillsToInstall) {
       const target = installable.find((s) => s.name === name);
       if (!target || target.install.length === 0) continue;
       const installId = target.install[0]?.id;

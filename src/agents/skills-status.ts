@@ -41,6 +41,8 @@ export type SkillStatusEntry = {
   emoji?: string;
   homepage?: string;
   always: boolean;
+  mandatory?: boolean;
+  category?: string;
   disabled: boolean;
   blockedByAllowlist: boolean;
   eligible: boolean;
@@ -193,6 +195,8 @@ function buildSkillStatus(
   const allowBundled = resolveBundledAllowlist(config);
   const blockedByAllowlist = !isBundledSkillAllowed(entry, allowBundled);
   const always = entry.metadata?.always === true;
+  const mandatory = entry.metadata?.mandatory === true;
+  const category = entry.metadata?.category;
   const emoji = entry.metadata?.emoji ?? entry.frontmatter.emoji;
   const homepageRaw =
     entry.metadata?.homepage ??
@@ -274,6 +278,8 @@ function buildSkillStatus(
     emoji,
     homepage,
     always,
+    mandatory,
+    category,
     disabled,
     blockedByAllowlist,
     eligible,
