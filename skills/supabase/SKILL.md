@@ -11,9 +11,11 @@ metadata:
       - id: "brew"
         kind: "brew"
         formula: "supabase/tap/supabase"
+        os: ["darwin", "linux"]
       - id: "scoop"
         kind: "scoop"
         formula: "supabase"
+        os: ["win32"]
       - id: "node"
         kind: "node"
         package: "supabase"
