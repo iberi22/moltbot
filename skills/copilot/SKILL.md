@@ -1,6 +1,6 @@
 ---
 name: copilot
-description: "GitHub Copilot in the CLI."
+description: "GitHub Copilot in the CLI. Requires GitHub CLI (gh) to be installed."
 metadata:
   moltbot:
     emoji: "✈️"
