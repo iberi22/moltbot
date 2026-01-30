@@ -451,6 +451,22 @@ export const MoltbotSchema = z
           })
           .strict()
           .optional(),
+        google: z
+          .object({
+            projectId: z.string().optional(),
+            serviceAccountKey: z.string().optional(),
+            zone: z.string().optional(),
+            machineType: z.string().optional(),
+          })
+          .strict()
+          .optional(),
+        render: z
+          .object({
+            apiKey: z.string().optional(),
+            serviceId: z.string().optional(),
+          })
+          .strict()
+          .optional(),
       })
       .strict()
       .optional(),

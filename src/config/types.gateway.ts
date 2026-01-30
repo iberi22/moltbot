@@ -1,4 +1,6 @@
 import type { GatewayEc2Config } from "./types.ec2.js";
+import type { GatewayGoogleConfig } from "./types.google.js";
+import type { GatewayRenderConfig } from "./types.render.js";
 
 export type GatewayBindMode = "auto" | "lan" | "loopback" | "custom" | "tailnet";
 
@@ -236,6 +238,8 @@ export type GatewayConfig = {
   http?: GatewayHttpConfig;
   nodes?: GatewayNodesConfig;
   ec2?: GatewayEc2Config;
+  google?: GatewayGoogleConfig;
+  render?: GatewayRenderConfig;
   /**
    * IPs of trusted reverse proxies (e.g. Traefik, nginx). When a connection
    * arrives from one of these IPs, the Gateway trusts `x-forwarded-for` (or

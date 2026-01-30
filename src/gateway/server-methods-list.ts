@@ -81,6 +81,8 @@ const BASE_METHODS = [
   "ec2.list",
   "ec2.deploy",
   "ec2.terminate",
+  "google.deploy",
+  "render.deploy",
   // WebChat WebSocket-native chat methods
   "chat.history",
   "chat.abort",
@@ -112,4 +114,6 @@ export const GATEWAY_EVENTS = [
   "exec.approval.requested",
   "exec.approval.resolved",
   "ec2.deploy.status",
+  "google.deploy.status",
+  "render.deploy.status",
 ];

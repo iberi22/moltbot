@@ -150,6 +150,14 @@ export type AppViewState = {
   ec2Instances: any[];
   ec2Error: string | null;
   ec2DeploymentStatus: any | null;
+  googleLoading: boolean;
+  googleError: string | null;
+  googleDeploymentStatus: any | null;
+  renderLoading: boolean;
+  renderError: string | null;
+  renderDeploymentStatus: any | null;
+  deployTab: "aws" | "google" | "render";
+  showTutorial: boolean;
   client: GatewayBrowserClient | null;
   connect: () => void;
   setTab: (tab: Tab) => void;
@@ -212,5 +220,7 @@ export type AppViewState = {
   handleEc2Describe: () => Promise<void>;
   handleEc2Deploy: () => Promise<void>;
   handleEc2Terminate: (instanceId: string) => Promise<void>;
+  handleGoogleDeploy: (opts?: { zone?: string; machineType?: string }) => Promise<void>;
+  handleRenderDeploy: (opts?: { serviceId?: string }) => Promise<void>;
   handleCallDebugMethod: (method: string, params: string) => Promise<void>;
 };

@@ -434,13 +434,27 @@ export function renderApp(state: AppViewState) {
 
         ${state.tab === "deploy"
           ? renderDeploy({
+              activeTab: state.deployTab,
+              showTutorial: state.showTutorial,
               loading: state.ec2Loading,
               instances: state.ec2Instances,
               error: state.ec2Error,
               deploymentStatus: state.ec2DeploymentStatus,
+              googleLoading: state.googleLoading,
+              googleError: state.googleError,
+              googleDeploymentStatus: state.googleDeploymentStatus,
+              renderLoading: state.renderLoading,
+              renderError: state.renderError,
+              renderDeploymentStatus: state.renderDeploymentStatus,
+              onTabChange: (tab) => (state as any).deployTab = tab,
+              onToggleTutorial: (show) => (state as any).showTutorial = show,
               onRefresh: () => loadEc2Instances(state as any),
               onDeploy: () => deployEc2Instance(state as any),
               onTerminate: (instanceId) => terminateEc2Instance(state as any, instanceId),
+              onGoogleDeploy: (opts) => state.handleGoogleDeploy(opts),
+              onRenderDeploy: (opts) => state.handleRenderDeploy(opts),
+              onSaveConfig: (path, value) => updateConfigFormValue(state, path, value),
+              onSave: () => saveConfig(state),
             })
           : nothing}
 
