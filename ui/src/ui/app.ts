@@ -252,6 +252,17 @@ export class MoltbotApp extends LitElement {
   @state() ec2Error: string | null = null;
   @state() ec2DeploymentStatus: any | null = null;
 
+  @state() googleLoading = false;
+  @state() googleError: string | null = null;
+  @state() googleDeploymentStatus: any | null = null;
+
+  @state() renderLoading = false;
+  @state() renderError: string | null = null;
+  @state() renderDeploymentStatus: any | null = null;
+
+  @state() deployTab: "aws" | "google" | "render" = "aws";
+  @state() showTutorial = false;
+
   client: GatewayBrowserClient | null = null;
   private chatScrollFrame: number | null = null;
   private chatScrollTimeout: number | null = null;
@@ -511,6 +522,21 @@ export class MoltbotApp extends LitElement {
 
   async handleEc2Terminate(instanceId: string) {
     await terminateEc2Instance(this, instanceId);
+  }
+
+  async handleGoogleDeploy(opts?: { zone?: string; machineType?: string }) {
+    const { deployGoogleInstance } = await import("./controllers/google");
+    await deployGoogleInstance(this, opts);
+  }
+
+  async handleRenderDeploy(opts?: { serviceId?: string }) {
+    const { deployRenderService } = await import("./controllers/render");
+    await deployRenderService(this, opts);
+  }
+
+  async handleRenderCreate(repoUrl: string) {
+    const { createRenderService } = await import("./controllers/render");
+    await createRenderService(this, repoUrl);
   }
 
   render() {
