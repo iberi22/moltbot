@@ -222,5 +222,6 @@ export type AppViewState = {
   handleEc2Terminate: (instanceId: string) => Promise<void>;
   handleGoogleDeploy: (opts?: { zone?: string; machineType?: string }) => Promise<void>;
   handleRenderDeploy: (opts?: { serviceId?: string }) => Promise<void>;
+  handleRenderCreate: (repoUrl: string) => Promise<void>;
   handleCallDebugMethod: (method: string, params: string) => Promise<void>;
 };

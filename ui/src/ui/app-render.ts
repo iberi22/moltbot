@@ -453,6 +453,7 @@ export function renderApp(state: AppViewState) {
               onTerminate: (instanceId) => terminateEc2Instance(state as any, instanceId),
               onGoogleDeploy: (opts) => state.handleGoogleDeploy(opts),
               onRenderDeploy: (opts) => state.handleRenderDeploy(opts),
+              onRenderCreate: (repoUrl) => state.handleRenderCreate(repoUrl),
               onSaveConfig: (path, value) => updateConfigFormValue(state, path, value),
               onSave: () => saveConfig(state),
             })

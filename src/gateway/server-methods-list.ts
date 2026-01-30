@@ -83,6 +83,7 @@ const BASE_METHODS = [
   "ec2.terminate",
   "google.deploy",
   "render.deploy",
+  "render.create",
   // WebChat WebSocket-native chat methods
   "chat.history",
   "chat.abort",

@@ -1,4 +1,5 @@
 import { loadConfig } from "../config/config.js";
+import { getStartupScript } from "./provisioning.js";
 import {
   EC2Client,
   RunInstancesCommand,
@@ -86,6 +87,7 @@ export class AwsEc2Service {
 
       // 3. Launch Instance (t2.micro - Ubuntu 24.04 LTS in us-east-1)
       onStatus({ step: "launching", message: "Lanzando instancia t2.micro (Free Tier)..." });
+      const userData = Buffer.from(getStartupScript()).toString("base64");
       const runResponse = await this.client.send(
         new RunInstancesCommand({
           ImageId: ami || "ami-0e2c8ccd4e1ffc351", // Ubuntu 24.04 LTS in us-east-1
@@ -94,6 +96,7 @@ export class AwsEc2Service {
           MaxCount: 1,
           MinCount: 1,
           SecurityGroupIds: [groupId],
+          UserData: userData,
         })
       );
 

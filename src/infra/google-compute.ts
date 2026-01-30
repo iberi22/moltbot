@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
 import { loadConfig } from "../config/config.js";
+import { getStartupScript } from "./provisioning.js";
 
 export interface GoogleDeploymentStatus {
   step: "idle" | "launching" | "ready" | "error";
@@ -94,6 +95,7 @@ export class GoogleComputeService {
       // Create instance (Ubuntu 24.04 LTS equivalent or similar)
       // Using standard image family for ubuntu-2204-lts as 24.04 might need specific name
       // Free tier is e2-micro.
+      const startupScript = getStartupScript();
       await this.runCommand("gcloud", [
         "compute",
         "instances",
@@ -104,6 +106,7 @@ export class GoogleComputeService {
         "--image-family=ubuntu-2204-lts",
         "--image-project=ubuntu-os-cloud",
         "--tags=http-server,https-server",
+        `--metadata=startup-script=${startupScript}`,
       ]);
 
       // 3. Get IP

@@ -32,6 +32,7 @@ export type DeployProps = {
 
   onGoogleDeploy: (opts?: { zone?: string; machineType?: string }) => void;
   onRenderDeploy: (opts?: { serviceId?: string }) => void;
+  onRenderCreate: (repoUrl: string) => void;
   onSaveConfig: (path: string[], value: unknown) => void;
   onSave: () => void;
 };
@@ -273,6 +274,32 @@ function renderRenderTab(props: DeployProps) {
           Trigger Deploy
         </button>
       </div>
+
+      <details class="config-diff" style="margin-top: 16px;">
+        <summary class="config-diff__summary">
+          <span>Create New Service</span>
+          <svg class="config-diff__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </summary>
+        <div class="config-diff__content">
+          <label class="field">
+            <span class="field-label">Git Repository URL</span>
+            <input
+              type="text"
+              class="input"
+              id="render-repo-url"
+              placeholder="https://github.com/username/repo"
+            />
+          </label>
+          <div class="row" style="margin-top: 8px;">
+            <button class="btn btn--sm primary" ?disabled=${props.renderLoading} @click=${() => {
+              const repo = (document.getElementById("render-repo-url") as HTMLInputElement).value;
+              if (repo) props.onRenderCreate(repo);
+            }}>Create Service</button>
+          </div>
+        </div>
+      </details>
 
       ${props.renderError
         ? html`<div class="callout danger" style="margin-top: 16px;">${props.renderError}</div>`

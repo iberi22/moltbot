@@ -534,6 +534,11 @@ export class MoltbotApp extends LitElement {
     await deployRenderService(this, opts);
   }
 
+  async handleRenderCreate(repoUrl: string) {
+    const { createRenderService } = await import("./controllers/render");
+    await createRenderService(this, repoUrl);
+  }
+
   render() {
     return renderApp(this);
   }
