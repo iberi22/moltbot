@@ -1,7 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_client/models/chat_message.dart';
-import 'package:flutter_client/services/websocket_service.dart';
-import 'dart:convert';
+import 'package:flutter_client/services/gateway_client.dart';
+import 'package:flutter_client/providers/gateway_provider.dart';
+import 'dart:developer';
 
 enum ConnectionStatus { disconnected, connecting, connected, error }
 
@@ -30,38 +31,55 @@ class ChatState {
 }
 
 class ChatNotifier extends StateNotifier<ChatState> {
-  WebSocketService? _service;
+  final GatewayClient _client;
+  String _sessionKey = 'main';
 
-  ChatNotifier() : super(ChatState());
+  ChatNotifier(this._client) : super(ChatState()) {
+    // Listen to connection state
+    _client.onConnected = () {
+      state = state.copyWith(status: ConnectionStatus.connected);
+      _loadHistory();
+    };
+    _client.onDisconnected = () {
+      state = state.copyWith(status: ConnectionStatus.disconnected);
+    };
+    _client.onError = (err) {
+      state = state.copyWith(
+        status: ConnectionStatus.error,
+        error: err.toString(),
+      );
+    };
+
+    // Listen to events
+    _client.events.listen(_handleEvent);
+  }
 
   void connect(String url) {
     if (state.status == ConnectionStatus.connected) return;
-
     state = state.copyWith(status: ConnectionStatus.connecting, error: null);
+    _client.connect(url);
+  }
 
-    _service = WebSocketService(
-      onConnected: () {
-        state = state.copyWith(status: ConnectionStatus.connected);
-      },
-      onDisconnected: () {
-        state = state.copyWith(status: ConnectionStatus.disconnected);
-      },
-      onError: (err) {
-        state = state.copyWith(
-          status: ConnectionStatus.error,
-          error: err.toString(),
-        );
-      },
-      onMessageReceived: (data) {
-        _handleIncomingMessage(data);
-      },
-    );
-
-    _service!.connect(url);
+  void _loadHistory() {
+     _client.request('chat.history', {'key': _sessionKey}).then((history) {
+       if (history is List) {
+         final messages = history.map((msg) {
+           return ChatMessage(
+             id: msg['id'] ?? DateTime.now().millisecondsSinceEpoch.toString(),
+             text: msg['text'] ?? '',
+             createdAt: DateTime.now(),
+             isUser: msg['role'] == 'user',
+           );
+         }).toList();
+         state = state.copyWith(messages: messages);
+       }
+     }).catchError((e) {
+       log('Error loading history: $e');
+     });
   }
 
   void disconnect() {
-    _service?.disconnect();
+    _client.disconnect();
     state = state.copyWith(status: ConnectionStatus.disconnected);
   }
 
@@ -76,70 +94,40 @@ class ChatNotifier extends StateNotifier<ChatState> {
       isUser: true,
     );
 
-    // Optimistically add message
     state = state.copyWith(messages: [...state.messages, message]);
 
-    // Construct payload - mimicking standard JSON RPC or event format
-    // This might need adjustment based on actual server protocol
-    final payload = {
-      "method": "chat.send",
-      "params": {
-        "text": text,
-      },
-      "jsonrpc": "2.0",
-      "id": tempId
-    };
-
-    _service!.send(payload);
+    _client.request('chat.send', {
+      'message': text,
+      'sessionKey': _sessionKey,
+    }).catchError((e) {
+      log('Send failed: $e');
+      state = state.copyWith(error: 'Failed to send message: $e');
+    });
   }
 
-  void _handleIncomingMessage(dynamic data) {
-    try {
-      // Decode if string
-      final parsed = data is String ? jsonDecode(data) : data;
+  void _handleEvent(Map<String, dynamic> event) {
+    final type = event['event'];
+    final payload = event['payload'];
 
-      // Attempt to extract text from common structures
-      // Note: This is a simplification. Real implementation needs robust protocol parsing.
-      String? text;
-      String? id;
-      bool isUser = false;
+    if (type == 'chat.message') {
+      final text = payload['text'];
+      final role = payload['role'];
+      final id = payload['id'];
 
-      if (parsed is Map) {
-         if (parsed.containsKey('result')) {
-             // Response to our message?
-             return;
-         }
-
-         // Assuming event structure
-         // e.g. { "method": "chat.message", "params": { "text": "..." } }
-         if (parsed['method'] == 'chat.message') {
-           text = parsed['params']?['text'];
-           id = parsed['params']?['id'] ?? DateTime.now().millisecondsSinceEpoch.toString();
-         }
-
-         // Or direct message object
-         if (parsed.containsKey('text')) {
-           text = parsed['text'];
-           id = parsed['id'] ?? DateTime.now().millisecondsSinceEpoch.toString();
-         }
-      }
-
-      if (text != null) {
+      if (role == 'assistant') {
         final message = ChatMessage(
-          id: id!,
-          text: text,
+          id: id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+          text: text ?? '',
           createdAt: DateTime.now(),
-          isUser: isUser,
+          isUser: false,
         );
         state = state.copyWith(messages: [...state.messages, message]);
       }
-
-    } catch (e) {
-      print("Error parsing message: $e");
     }
   }
 }
 
 final chatProvider = StateNotifierProvider<ChatNotifier, ChatState>((ref) {
-  return ChatNotifier();
+  final client = ref.watch(gatewayClientProvider);
+  return ChatNotifier(client);
 });
