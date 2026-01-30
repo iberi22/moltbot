@@ -442,6 +442,15 @@ export const MoltbotSchema = z
           })
           .strict()
           .optional(),
+        ec2: z
+          .object({
+            accessKeyId: z.string().optional(),
+            secretAccessKey: z.string().optional(),
+            region: z.string().optional(),
+            ami: z.string().optional(),
+          })
+          .strict()
+          .optional(),
       })
       .strict()
       .optional(),

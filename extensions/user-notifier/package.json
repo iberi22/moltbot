@@ -1,0 +1,11 @@
+{
+  "name": "@clawdbot/user-notifier",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Notifies the user via WhatsApp/Telegram about bot activity.",
+  "clawdbot": {
+    "extensions": [
+      "./index.ts"
+    ]
+  }
+}

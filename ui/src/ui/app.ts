@@ -78,6 +78,7 @@ import {
 } from "./app-channels";
 import type { NostrProfileFormState } from "./views/channels.nostr-profile-form";
 import { loadAssistantIdentity as loadAssistantIdentityInternal } from "./controllers/assistant-identity";
+import { loadEc2Instances, deployEc2Instance, terminateEc2Instance } from "./controllers/ec2";
 
 declare global {
   interface Window {
@@ -246,6 +247,10 @@ export class MoltbotApp extends LitElement {
   @state() logsLimit = 500;
   @state() logsMaxBytes = 250_000;
   @state() logsAtBottom = true;
+  @state() ec2Loading = false;
+  @state() ec2Instances: any[] = [];
+  @state() ec2Error: string | null = null;
+  @state() ec2DeploymentStatus: any | null = null;
 
   client: GatewayBrowserClient | null = null;
   private chatScrollFrame: number | null = null;
@@ -494,6 +499,18 @@ export class MoltbotApp extends LitElement {
     const newRatio = Math.max(0.4, Math.min(0.7, ratio));
     this.splitRatio = newRatio;
     this.applySettings({ ...this.settings, splitRatio: newRatio });
+  }
+
+  async handleEc2Describe() {
+    await loadEc2Instances(this);
+  }
+
+  async handleEc2Deploy() {
+    await deployEc2Instance(this);
+  }
+
+  async handleEc2Terminate(instanceId: string) {
+    await terminateEc2Instance(this, instanceId);
   }
 
   render() {

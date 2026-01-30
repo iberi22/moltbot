@@ -146,6 +146,10 @@ export type AppViewState = {
   logsLevelFilters: Record<LogLevel, boolean>;
   logsAutoFollow: boolean;
   logsTruncated: boolean;
+  ec2Loading: boolean;
+  ec2Instances: any[];
+  ec2Error: string | null;
+  ec2DeploymentStatus: any | null;
   client: GatewayBrowserClient | null;
   connect: () => void;
   setTab: (tab: Tab) => void;
@@ -205,5 +209,8 @@ export type AppViewState = {
   handleLogsFilterChange: (next: string) => void;
   handleLogsLevelFilterToggle: (level: LogLevel) => void;
   handleLogsAutoFollowToggle: (next: boolean) => void;
+  handleEc2Describe: () => Promise<void>;
+  handleEc2Deploy: () => Promise<void>;
+  handleEc2Terminate: (instanceId: string) => Promise<void>;
   handleCallDebugMethod: (method: string, params: string) => Promise<void>;
 };

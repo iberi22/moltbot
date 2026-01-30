@@ -106,6 +106,14 @@ function buildInstallCommand(
       if (!spec.formula) return { argv: null, error: "missing brew formula" };
       return { argv: ["brew", "install", spec.formula] };
     }
+    case "scoop": {
+      if (!spec.formula) return { argv: null, error: "missing scoop formula" };
+      return { argv: ["scoop", "install", spec.formula] };
+    }
+    case "choco": {
+      if (!spec.package) return { argv: null, error: "missing choco package" };
+      return { argv: ["choco", "install", "-y", spec.package] };
+    }
     case "node": {
       if (!spec.package) return { argv: null, error: "missing node package" };
       return {
@@ -342,7 +350,11 @@ export async function installSkill(params: SkillInstallRequest): Promise<SkillIn
     };
   }
 
+  const isWin = process.platform === "win32";
   const brewExe = hasBinary("brew") ? "brew" : resolveBrewExecutable();
+  const scoopExe = hasBinary("scoop") ? "scoop" : undefined;
+  const chocoExe = hasBinary("choco") ? "choco" : undefined;
+
   if (spec.kind === "brew" && !brewExe) {
     return {
       ok: false,
@@ -352,8 +364,37 @@ export async function installSkill(params: SkillInstallRequest): Promise<SkillIn
       code: null,
     };
   }
+  if (spec.kind === "scoop" && !scoopExe) {
+    return {
+      ok: false,
+      message: "scoop not installed",
+      stdout: "",
+      stderr: "",
+      code: null,
+    };
+  }
+  if (spec.kind === "choco" && !chocoExe) {
+    return {
+      ok: false,
+      message: "choco not installed",
+      stdout: "",
+      stderr: "",
+      code: null,
+    };
+  }
+
   if (spec.kind === "uv" && !hasBinary("uv")) {
-    if (brewExe) {
+    if (isWin) {
+      if (scoopExe) {
+        const result = await runCommandWithTimeout([scoopExe, "install", "uv"], { timeoutMs });
+        if (result.code !== 0) return { ok: false, message: "Failed to install uv (scoop)", ...result };
+      } else if (chocoExe) {
+        const result = await runCommandWithTimeout([chocoExe, "install", "-y", "uv"], { timeoutMs });
+        if (result.code !== 0) return { ok: false, message: "Failed to install uv (choco)", ...result };
+      } else {
+        return { ok: false, message: "uv not installed (install via scoop or choco)", stdout: "", stderr: "", code: null };
+      }
+    } else if (brewExe) {
       const brewResult = await runCommandWithTimeout([brewExe, "install", "uv"], {
         timeoutMs,
       });
@@ -376,6 +417,7 @@ export async function installSkill(params: SkillInstallRequest): Promise<SkillIn
       };
     }
   }
+
   if (!command.argv || command.argv.length === 0) {
     return {
       ok: false,
@@ -389,9 +431,25 @@ export async function installSkill(params: SkillInstallRequest): Promise<SkillIn
   if (spec.kind === "brew" && brewExe && command.argv[0] === "brew") {
     command.argv[0] = brewExe;
   }
+  if (spec.kind === "scoop" && scoopExe && command.argv[0] === "scoop") {
+    command.argv[0] = scoopExe;
+  }
+  if (spec.kind === "choco" && chocoExe && command.argv[0] === "choco") {
+    command.argv[0] = chocoExe;
+  }
 
   if (spec.kind === "go" && !hasBinary("go")) {
-    if (brewExe) {
+    if (isWin) {
+      if (scoopExe) {
+        const result = await runCommandWithTimeout([scoopExe, "install", "go"], { timeoutMs });
+        if (result.code !== 0) return { ok: false, message: "Failed to install go (scoop)", ...result };
+      } else if (chocoExe) {
+        const result = await runCommandWithTimeout([chocoExe, "install", "-y", "golang"], { timeoutMs });
+        if (result.code !== 0) return { ok: false, message: "Failed to install go (choco)", ...result };
+      } else {
+        return { ok: false, message: "go not installed (install via scoop or choco)", stdout: "", stderr: "", code: null };
+      }
+    } else if (brewExe) {
       const brewResult = await runCommandWithTimeout([brewExe, "install", "go"], {
         timeoutMs,
       });

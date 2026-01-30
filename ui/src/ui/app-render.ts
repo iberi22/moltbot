@@ -51,6 +51,7 @@ import {
   rotateDeviceToken,
 } from "./controllers/devices";
 import { renderSkills } from "./views/skills";
+import { renderDeploy } from "./views/deploy";
 import { renderChatControls, renderTab, renderThemeToggle } from "./app-render.helpers";
 import { loadChannels } from "./controllers/channels";
 import { loadPresence } from "./controllers/presence";
@@ -82,6 +83,11 @@ import {
 import { loadCronRuns, toggleCronJob, runCronJob, removeCronJob, addCronJob } from "./controllers/cron";
 import { loadDebug, callDebugMethod } from "./controllers/debug";
 import { loadLogs } from "./controllers/logs";
+import {
+  loadEc2Instances,
+  deployEc2Instance,
+  terminateEc2Instance,
+} from "./controllers/ec2";
 
 const AVATAR_DATA_RE = /^data:/i;
 const AVATAR_HTTP_RE = /^https?:\/\//i;
@@ -423,6 +429,18 @@ export function renderApp(state: AppViewState) {
                     : { kind: "gateway" as const };
                 return saveExecApprovals(state, target);
               },
+            })
+          : nothing}
+
+        ${state.tab === "deploy"
+          ? renderDeploy({
+              loading: state.ec2Loading,
+              instances: state.ec2Instances,
+              error: state.ec2Error,
+              deploymentStatus: state.ec2DeploymentStatus,
+              onRefresh: () => loadEc2Instances(state as any),
+              onDeploy: () => deployEc2Instance(state as any),
+              onTerminate: (instanceId) => terminateEc2Instance(state as any, instanceId),
             })
           : nothing}
 

@@ -78,19 +78,44 @@ function selectPreferredInstallSpec(
 ): { spec: SkillInstallSpec; index: number } | undefined {
   if (install.length === 0) return undefined;
   const indexed = install.map((spec, index) => ({ spec, index }));
-  const findKind = (kind: SkillInstallSpec["kind"]) =>
-    indexed.find((item) => item.spec.kind === kind);
+  const findKind = (kind: SkillInstallSpec["kind"]) => indexed.find((item) => item.spec.kind === kind);
 
-  const brewSpec = findKind("brew");
-  const nodeSpec = findKind("node");
-  const goSpec = findKind("go");
-  const uvSpec = findKind("uv");
+  const isWin = process.platform === "win32";
 
-  if (prefs.preferBrew && hasBinary("brew") && brewSpec) return brewSpec;
-  if (uvSpec) return uvSpec;
-  if (nodeSpec) return nodeSpec;
-  if (brewSpec) return brewSpec;
-  if (goSpec) return goSpec;
+  if (isWin) {
+    const chocoSpec = findKind("choco");
+    const scoopSpec = findKind("scoop");
+    const nodeSpec = findKind("node");
+    const uvSpec = findKind("uv");
+    const goSpec = findKind("go");
+
+    if (scoopSpec && hasBinary("scoop")) return scoopSpec;
+    if (chocoSpec && hasBinary("choco")) return chocoSpec;
+    if (uvSpec) return uvSpec;
+    if (nodeSpec) return nodeSpec;
+    if (scoopSpec) return scoopSpec;
+    if (chocoSpec) return chocoSpec;
+    if (goSpec) return goSpec;
+
+    // On Windows, if brew is the only option and not installed, don't return it as preferred
+    // unless there are literally no other options at all (in which case we return indexed[0] below).
+    // Let's filter out brew if not installed.
+    const nonBrew = indexed.find((item) => item.spec.kind !== "brew");
+    if (nonBrew) return nonBrew;
+    if (hasBinary("brew")) return findKind("brew");
+  } else {
+    const brewSpec = findKind("brew");
+    const uvSpec = findKind("uv");
+    const nodeSpec = findKind("node");
+    const goSpec = findKind("go");
+
+    if (prefs.preferBrew && hasBinary("brew") && brewSpec) return brewSpec;
+    if (uvSpec) return uvSpec;
+    if (nodeSpec) return nodeSpec;
+    if (brewSpec) return brewSpec;
+    if (goSpec) return goSpec;
+  }
+
   return indexed[0];
 }
 
@@ -118,6 +143,10 @@ function normalizeInstallOptions(
     if (!label) {
       if (spec.kind === "brew" && spec.formula) {
         label = `Install ${spec.formula} (brew)`;
+      } else if (spec.kind === "scoop" && spec.formula) {
+        label = `Install ${spec.formula} (scoop)`;
+      } else if (spec.kind === "choco" && spec.package) {
+        label = `Install ${spec.package} (choco)`;
       } else if (spec.kind === "node" && spec.package) {
         label = `Install ${spec.package} (${prefs.nodeManager})`;
       } else if (spec.kind === "go" && spec.module) {
@@ -142,6 +171,13 @@ function normalizeInstallOptions(
 
   const preferred = selectPreferredInstallSpec(filtered, prefs);
   if (!preferred) return [];
+
+  const isWin = process.platform === "win32";
+
+  if (isWin && preferred.spec.kind === "brew" && !hasBinary("brew")) {
+    return [];
+  }
+
   return [toOption(preferred.spec, preferred.index)];
 }
 

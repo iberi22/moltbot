@@ -1,5 +1,7 @@
 import type { MoltbotConfig } from "../config/config.js";
 
+import { hasBinary } from "./skills/config.js";
+
 export {
   hasBinary,
   isBundledSkillAllowed,
@@ -33,13 +35,21 @@ export {
 } from "./skills/workspace.js";
 
 export function resolveSkillsInstallPreferences(config?: MoltbotConfig) {
+  const isWin = process.platform === "win32";
   const raw = config?.skills?.install;
-  const preferBrew = raw?.preferBrew ?? true;
+  const preferBrew = raw?.preferBrew ?? (isWin ? false : true);
   const managerRaw = typeof raw?.nodeManager === "string" ? raw.nodeManager.trim() : "";
   const manager = managerRaw.toLowerCase();
-  const nodeManager =
-    manager === "pnpm" || manager === "yarn" || manager === "bun" || manager === "npm"
-      ? (manager as "npm" | "pnpm" | "yarn" | "bun")
-      : "npm";
+
+  let nodeManager: "npm" | "pnpm" | "yarn" | "bun" = "npm";
+  if (manager === "pnpm" || manager === "yarn" || manager === "bun" || manager === "npm") {
+    nodeManager = manager as "npm" | "pnpm" | "yarn" | "bun";
+  } else {
+    // Auto-detect
+    if (hasBinary("pnpm")) nodeManager = "pnpm";
+    else if (hasBinary("yarn")) nodeManager = "yarn";
+    else if (hasBinary("bun")) nodeManager = "bun";
+  }
+
   return { preferBrew, nodeManager };
 }

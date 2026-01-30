@@ -237,11 +237,19 @@ function handleGatewayEventUnsafe(host: GatewayHost, evt: GatewayEventFrame) {
     }
     return;
   }
-
   if (evt.event === "exec.approval.resolved") {
     const resolved = parseExecApprovalResolved(evt.payload);
     if (resolved) {
       host.execApprovalQueue = removeExecApproval(host.execApprovalQueue, resolved.id);
+    }
+    return;
+  }
+
+  if (evt.event === "ec2.deploy.status") {
+    const app = host as unknown as MoltbotApp;
+    app.ec2DeploymentStatus = evt.payload;
+    if (app.ec2DeploymentStatus?.step === "ready") {
+      void loadEc2Instances(app);
     }
   }
 }

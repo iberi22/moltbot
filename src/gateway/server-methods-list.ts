@@ -78,6 +78,9 @@ const BASE_METHODS = [
   "agent.identity.get",
   "agent.wait",
   "browser.request",
+  "ec2.list",
+  "ec2.deploy",
+  "ec2.terminate",
   // WebChat WebSocket-native chat methods
   "chat.history",
   "chat.abort",
@@ -108,4 +111,5 @@ export const GATEWAY_EVENTS = [
   "voicewake.changed",
   "exec.approval.requested",
   "exec.approval.resolved",
+  "ec2.deploy.status",
 ];

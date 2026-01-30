@@ -1,0 +1,31 @@
+{
+  "id": "user-notifier",
+  "name": "User Notifier",
+  "description": "Notifies the user via WhatsApp/Telegram about bot activity.",
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "targetNumber": {
+        "type": "string",
+        "description": "The WhatsApp number to notify (E.164 format)."
+      },
+      "telegramChatId": {
+        "type": "string",
+        "description": "The Telegram chat ID to notify."
+      },
+      "notifyOnGatewayStart": {
+        "type": "boolean",
+        "default": true
+      },
+      "notifyOnMessageReceived": {
+        "type": "boolean",
+        "default": false
+      },
+      "notifyOnAgentError": {
+        "type": "boolean",
+        "default": true
+      }
+    },
+    "additionalProperties": false
+  }
+}
