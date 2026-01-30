@@ -96,6 +96,8 @@ export function resolveMoltbotMetadata(
     const osRaw = normalizeStringList(metadataObj.os);
     return {
       always: typeof metadataObj.always === "boolean" ? metadataObj.always : undefined,
+      mandatory: typeof metadataObj.mandatory === "boolean" ? metadataObj.mandatory : undefined,
+      category: typeof metadataObj.category === "string" ? metadataObj.category : undefined,
       emoji: typeof metadataObj.emoji === "string" ? metadataObj.emoji : undefined,
       homepage: typeof metadataObj.homepage === "string" ? metadataObj.homepage : undefined,
       skillKey: typeof metadataObj.skillKey === "string" ? metadataObj.skillKey : undefined,
