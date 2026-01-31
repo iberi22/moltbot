@@ -1,6 +1,6 @@
-import type { MoltbotApp } from "../app";
+import type { OpenClawApp } from "../app";
 
-export async function deployRenderService(app: MoltbotApp, opts?: { serviceId?: string }) {
+export async function deployRenderService(app: OpenClawApp, opts?: { serviceId?: string }) {
   if (!app.client || !app.connected) return;
   app.renderLoading = true;
   app.renderError = null;
@@ -15,7 +15,7 @@ export async function deployRenderService(app: MoltbotApp, opts?: { serviceId?: 
   }
 }
 
-export async function createRenderService(app: MoltbotApp, repoUrl: string) {
+export async function createRenderService(app: OpenClawApp, repoUrl: string) {
   if (!app.client || !app.connected) return;
   app.renderLoading = true;
   app.renderError = null;

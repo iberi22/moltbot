@@ -1,6 +1,6 @@
-import type { MoltbotApp } from "../app";
+import type { OpenClawApp } from "../app";
 
-export async function loadEc2Instances(app: MoltbotApp) {
+export async function loadEc2Instances(app: OpenClawApp) {
   if (!app.client || !app.connected) return;
   if (app.ec2Loading) return;
   app.ec2Loading = true;
@@ -15,7 +15,7 @@ export async function loadEc2Instances(app: MoltbotApp) {
   }
 }
 
-export async function deployEc2Instance(app: MoltbotApp) {
+export async function deployEc2Instance(app: OpenClawApp) {
   if (!app.client || !app.connected) return;
   app.ec2Loading = true;
   app.ec2Error = null;
@@ -31,7 +31,7 @@ export async function deployEc2Instance(app: MoltbotApp) {
   }
 }
 
-export async function terminateEc2Instance(app: MoltbotApp, instanceId: string) {
+export async function terminateEc2Instance(app: OpenClawApp, instanceId: string) {
   if (!app.client || !app.connected) return;
   app.ec2Loading = true;
   try {

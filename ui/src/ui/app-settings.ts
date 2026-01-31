@@ -164,7 +164,7 @@ export async function refreshActiveTab(host: SettingsHost) {
     );
   }
   if (host.tab === "deploy") {
-    await loadEc2Instances(host as unknown as MoltbotApp);
+    await loadEc2Instances(host as unknown as OpenClawApp);
   }
   if (host.tab === "config") {
     await loadConfigSchema(host as unknown as OpenClawApp);

@@ -246,7 +246,7 @@ function handleGatewayEventUnsafe(host: GatewayHost, evt: GatewayEventFrame) {
   }
 
   if (evt.event === "ec2.deploy.status") {
-    const app = host as unknown as MoltbotApp;
+    const app = host as unknown as OpenClawApp;
     app.ec2DeploymentStatus = evt.payload;
     if (app.ec2DeploymentStatus?.step === "ready") {
       void loadEc2Instances(app);

@@ -1,6 +1,6 @@
-import type { MoltbotApp } from "../app";
+import type { OpenClawApp } from "../app";
 
-export async function deployGoogleInstance(app: MoltbotApp, opts?: { zone?: string; machineType?: string }) {
+export async function deployGoogleInstance(app: OpenClawApp, opts?: { zone?: string; machineType?: string }) {
   if (!app.client || !app.connected) return;
   app.googleLoading = true;
   app.googleError = null;
