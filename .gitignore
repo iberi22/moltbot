@@ -71,3 +71,11 @@ USER.md
 
 # local tooling
 .serena/
+
+# Temporary verification files
+iberi22-openbot-*.txt
+
+# Windows system files
+Thumbs.db
+ehthumbs.db
+Desktop.ini

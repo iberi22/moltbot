@@ -16,7 +16,7 @@ export type SkillInstallSpec = {
   targetDir?: string;
 };
 
-export type MoltbotSkillMetadata = {
+export type OpenClawSkillMetadata = {
   always?: boolean;
   mandatory?: boolean;
   category?: string;
@@ -68,7 +68,7 @@ export type ParsedSkillFrontmatter = Record<string, string>;
 export type SkillEntry = {
   skill: Skill;
   frontmatter: ParsedSkillFrontmatter;
-  metadata?: MoltbotSkillMetadata;
+  metadata?: OpenClawSkillMetadata;
   invocation?: SkillInvocationPolicy;
 };
 
