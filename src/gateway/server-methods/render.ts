@@ -9,7 +9,7 @@ function getRenderService(overrides?: { serviceId?: string }) {
   const apiKey = renderCfg?.apiKey;
   const serviceId = overrides?.serviceId || renderCfg?.serviceId;
 
-  if (!apiKey || !serviceId) {
+  if (!apiKey) {
     throw new Error(
       "Render credentials not configured. Please add gateway.render section to moltbot.json."
     );

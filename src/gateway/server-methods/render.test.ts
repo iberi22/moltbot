@@ -1,73 +1,86 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { renderHandlers } from "./render.js";
-import type { GatewayContext } from "./types.js";
-import * as configMod from "../../config/config.js";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// Mock the RenderService
-const mocks = vi.hoisted(() => {
-    return {
-        deployService: vi.fn().mockImplementation((cb) => {
-            if (cb) cb({ step: "deploying", message: "Deploying..." });
-            return Promise.resolve();
-        }),
-        createService: vi.fn().mockImplementation((repo, cb) => {
-            if (cb) cb({ step: "creating", message: "Creating..." });
-            return Promise.resolve();
-        })
-    };
-});
-
-vi.mock("../../infra/render.js", () => ({
-  RenderService: class {
-    deployService(cb: any) {
-      return mocks.deployService(cb);
-    }
-    createService(repo: string, cb: any) {
-      return mocks.createService(repo, cb);
-    }
-  }
+// Use doMock to avoid hoisting issues with the config module
+vi.doMock("../../config/config.js", () => ({
+  loadConfig: vi.fn().mockReturnValue({
+    gateway: {
+      render: {
+        apiKey: "test-key",
+      },
+    },
+  }),
 }));
 
-describe("Render Gateway Handlers", () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
-        vi.spyOn(configMod, "loadConfig").mockReturnValue({
-            gateway: {
-                render: {
-                    apiKey: "test-api-key",
-                    serviceId: "test-service-id"
-                }
-            }
-        });
-    });
+const mockDeployService = vi.fn().mockImplementation(function(cb: any) {
+  cb({ step: "ready", message: "Deployed" });
+  return Promise.resolve();
+});
 
-  it("handles render.deploy request", async () => {
-    const respond = vi.fn();
-    const broadcast = vi.fn();
-    const context = { broadcast } as unknown as GatewayContext;
+const mockCreateService = vi.fn().mockImplementation(function(url: string, cb: any) {
+  cb({ step: "ready", message: "Created" });
+  return Promise.resolve();
+});
 
-    await renderHandlers["render.deploy"]({
-      params: { serviceId: "override-service-id" },
-      respond,
-      context
-    });
+vi.doMock("../../infra/render.js", () => {
+  return {
+    RenderService: vi.fn().mockImplementation(function(this: any) {
+      this.deployService = mockDeployService;
+      this.createService = mockCreateService;
+    }),
+  };
+});
 
-    expect(respond).toHaveBeenCalledWith(true, { started: true });
-    expect(mocks.deployService).toHaveBeenCalled();
+describe("render handlers", () => {
+  let renderHandlers: any;
+  let RenderService: any;
+
+  beforeEach(async () => {
+    vi.resetModules(); // Reset modules to ensure fresh mocks
+    const renderModule = await import("./render.js");
+    renderHandlers = renderModule.renderHandlers;
+    const infraModule = await import("../../infra/render.js");
+    RenderService = infraModule.RenderService;
   });
 
-  it("handles render.create request", async () => {
+  it("render.deploy should call deployService with serviceId", async () => {
     const respond = vi.fn();
     const broadcast = vi.fn();
-    const context = { broadcast } as unknown as GatewayContext;
+    const params = { serviceId: "srv-999" };
+
+    await renderHandlers["render.deploy"]({
+      params,
+      respond,
+      context: { broadcast } as any,
+    } as any);
+
+    expect(RenderService).toHaveBeenCalledWith("test-key", "srv-999");
+    expect(respond).toHaveBeenCalledWith(true, { started: true });
+    expect(broadcast).toHaveBeenCalledWith("render.deploy.status", { step: "ready", message: "Deployed" });
+  });
+
+  it("render.create should call createService with repoUrl", async () => {
+    const respond = vi.fn();
+    const broadcast = vi.fn();
+    const params = { repoUrl: "git://repo" };
 
     await renderHandlers["render.create"]({
-      params: { repoUrl: "https://github.com/test/repo" },
+      params,
       respond,
-      context
-    });
+      context: { broadcast } as any,
+    } as any);
 
     expect(respond).toHaveBeenCalledWith(true, { started: true });
-    expect(mocks.createService).toHaveBeenCalledWith("https://github.com/test/repo", expect.any(Function));
+    expect(broadcast).toHaveBeenCalledWith("render.deploy.status", { step: "ready", message: "Created" });
+  });
+
+  it("render.create should validate params", async () => {
+    const respond = vi.fn();
+    await renderHandlers["render.create"]({
+      params: {},
+      respond,
+    } as any);
+    expect(respond).toHaveBeenCalledWith(false, undefined, expect.objectContaining({ message: "repoUrl required" }));
+  });
+});
   });
 });

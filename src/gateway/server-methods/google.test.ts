@@ -1,57 +1,59 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { googleHandlers } from "./google.js";
-import type { GatewayContext } from "./types.js";
-import * as configMod from "../../config/config.js";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// Mock the GoogleComputeService
-const mocks = vi.hoisted(() => {
-    return {
-        deployInstance: vi.fn().mockImplementation((cb) => {
-            if (cb) cb({ step: "deploying", message: "Deploying..." });
-            return Promise.resolve();
-        })
-    };
-});
-
-vi.mock("../../infra/google-compute.js", () => ({
-  GoogleComputeService: class {
-    deployInstance(cb: any) {
-      return mocks.deployInstance(cb);
-    }
-  }
+// Hoist the mock variable
+const { mockLoadConfig, mockDeployInstance } = vi.hoisted(() => ({
+  mockLoadConfig: vi.fn(),
+  mockDeployInstance: vi.fn().mockImplementation(function(cb: any) {
+    cb({ step: "ready", message: "Done" });
+    return Promise.resolve();
+  }),
 }));
 
-describe("Google Gateway Handlers", () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
-        vi.spyOn(configMod, "loadConfig").mockReturnValue({
-            gateway: {
-                google: {
-                    projectId: "test-project",
-                    serviceAccountKey: "{}",
-                    zone: "test-zone",
-                    machineType: "test-machine"
-                }
-            }
-        });
-    });
+vi.mock("../../config/config.js", () => ({
+  loadConfig: mockLoadConfig,
+}));
 
-  it("handles google.deploy request", async () => {
+// IMPORTANT: Mocking the class constructor using a regular function
+vi.mock("../../infra/google-compute.js", () => {
+  return {
+    GoogleComputeService: vi.fn().mockImplementation(function(this: any) {
+      this.deployInstance = mockDeployInstance;
+    }),
+  };
+});
+
+import { googleHandlers } from "./google.js";
+import { GoogleComputeService } from "../../infra/google-compute.js";
+
+describe("google.deploy", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockLoadConfig.mockReturnValue({
+      gateway: {
+        google: {
+          projectId: "test-proj",
+          serviceAccountKey: "{}",
+        },
+      },
+    });
+  });
+
+  it("should call deployInstance with params", async () => {
     const respond = vi.fn();
     const broadcast = vi.fn();
-    const context = { broadcast } as unknown as GatewayContext;
+    const params = { zone: "us-west1-a", machineType: "e2-small" };
 
     await googleHandlers["google.deploy"]({
-      params: { zone: "us-west1-a" },
+      params,
       respond,
-      context
-    });
+      context: { broadcast } as any,
+    } as any);
 
-    if (respond.mock.calls.length > 0 && respond.mock.calls[0][0] === false) {
-        console.error("Handler failed with:", JSON.stringify(respond.mock.calls[0][2], null, 2));
-    }
-
+    expect(GoogleComputeService).toHaveBeenCalledWith("test-proj", "{}", "us-west1-a", "e2-small");
     expect(respond).toHaveBeenCalledWith(true, { started: true });
-    expect(mocks.deployInstance).toHaveBeenCalled();
+    // Verify broadcast callback (simulated in mock)
+    expect(broadcast).toHaveBeenCalledWith("google.deploy.status", { step: "ready", message: "Done" });
+  });
+});
   });
 });
