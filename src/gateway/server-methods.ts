@@ -5,6 +5,8 @@ import { browserHandlers } from "./server-methods/browser.js";
 import { channelsHandlers } from "./server-methods/channels.js";
 import { chatHandlers } from "./server-methods/chat.js";
 import { ec2Handlers } from "./server-methods/ec2.js";
+import { googleHandlers } from "./server-methods/google.js";
+import { renderHandlers } from "./server-methods/render.js";
 import { configHandlers } from "./server-methods/config.js";
 import { connectHandlers } from "./server-methods/connect.js";
 import { cronHandlers } from "./server-methods/cron.js";
@@ -140,7 +142,9 @@ function authorizeGatewayMethod(method: string, client: GatewayRequestOptions["c
     method === "sessions.reset" ||
     method === "sessions.delete" ||
     method === "sessions.compact" ||
-    method.startsWith("ec2.")
+    method.startsWith("ec2.") ||
+    method.startsWith("google.") ||
+    method.startsWith("render.")
   ) {
     return errorShape(ErrorCodes.INVALID_REQUEST, "missing scope: operator.admin");
   }
@@ -174,6 +178,8 @@ export const coreGatewayHandlers: GatewayRequestHandlers = {
   ...agentsHandlers,
   ...browserHandlers,
   ...ec2Handlers,
+  ...googleHandlers,
+  ...renderHandlers,
 };
 
 export async function handleGatewayRequest(
