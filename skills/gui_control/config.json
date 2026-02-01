@@ -1,0 +1,25 @@
+{
+  "name": "GUI Control",
+  "version": "1.0.0",
+  "description": "Skill para controlar interfaces gráficas mediante captura de pantalla y control de mouse",
+  "dependencies": [
+    "pyautogui",
+    "opencv-python",
+    "numpy",
+    "pillow",
+    "mss",
+    "pytesseract",
+    "pygetwindow"
+  ],
+  "modules": [
+    "gui_controller",
+    "screenshot_analyzer",
+    "element_finder"
+  ],
+  "settings": {
+    "default_threshold": 0.8,
+    "screenshot_quality": "high",
+    "ocr_enabled": true,
+    "mouse_speed": 0.5
+  }
+}

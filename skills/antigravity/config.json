@@ -1,0 +1,40 @@
+{
+  "name": "antigravity",
+  "displayName": "Antigravity IDE",
+  "description": "Automatización para el IDE Antigravity",
+  "version": "1.1.0",
+  "commands": {
+    "scan": {
+      "description": "Detectar procesos de Antigravity en ejecución",
+      "executable": "powershell",
+      "args": ["-File", "E:/scripts-python/clawdbot-new/skills/antigravity/antigravity.ps1", "scan"]
+    },
+    "open": {
+      "description": "Abrir el IDE antigravity",
+      "executable": "antigravity",
+      "args": []
+    },
+    "project_new": {
+      "description": "Crear nuevo proyecto",
+      "executable": "powershell",
+      "args": ["-File", "E:/scripts-python/clawdbot-new/skills/antigravity/antigravity.ps1", "new-project"]
+    },
+    "project_open": {
+      "description": "Abrir proyecto existente",
+      "executable": "powershell",
+      "args": ["-File", "E:/scripts-python/clawdbot-new/skills/antigravity/antigravity.ps1", "open-project"]
+    },
+    "run_task": {
+      "description": "Ejecutar tarea en Antigravity",
+      "executable": "powershell",
+      "args": ["-File", "E:/scripts-python/clawdbot-new/skills/antigravity/antigravity.ps1", "run-task"]
+    }
+  },
+  "features": [
+    "process_detection",
+    "project_management",
+    "file_exploration",
+    "code_execution",
+    "debugging"
+  ]
+}
