@@ -11,19 +11,19 @@ vi.doMock("../../config/config.js", () => ({
   }),
 }));
 
-const mockDeployService = vi.fn().mockImplementation(function(cb: any) {
+const mockDeployService = vi.fn().mockImplementation(function (cb: any) {
   cb({ step: "ready", message: "Deployed" });
   return Promise.resolve();
 });
 
-const mockCreateService = vi.fn().mockImplementation(function(url: string, cb: any) {
+const mockCreateService = vi.fn().mockImplementation(function (url: string, cb: any) {
   cb({ step: "ready", message: "Created" });
   return Promise.resolve();
 });
 
 vi.doMock("../../infra/render.js", () => {
   return {
-    RenderService: vi.fn().mockImplementation(function(this: any) {
+    RenderService: vi.fn().mockImplementation(function (this: any) {
       this.deployService = mockDeployService;
       this.createService = mockCreateService;
     }),
@@ -55,7 +55,10 @@ describe("render handlers", () => {
 
     expect(RenderService).toHaveBeenCalledWith("test-key", "srv-999");
     expect(respond).toHaveBeenCalledWith(true, { started: true });
-    expect(broadcast).toHaveBeenCalledWith("render.deploy.status", { step: "ready", message: "Deployed" });
+    expect(broadcast).toHaveBeenCalledWith("render.deploy.status", {
+      step: "ready",
+      message: "Deployed",
+    });
   });
 
   it("render.create should call createService with repoUrl", async () => {
@@ -70,7 +73,10 @@ describe("render handlers", () => {
     } as any);
 
     expect(respond).toHaveBeenCalledWith(true, { started: true });
-    expect(broadcast).toHaveBeenCalledWith("render.deploy.status", { step: "ready", message: "Created" });
+    expect(broadcast).toHaveBeenCalledWith("render.deploy.status", {
+      step: "ready",
+      message: "Created",
+    });
   });
 
   it("render.create should validate params", async () => {
@@ -79,8 +85,10 @@ describe("render handlers", () => {
       params: {},
       respond,
     } as any);
-    expect(respond).toHaveBeenCalledWith(false, undefined, expect.objectContaining({ message: "repoUrl required" }));
-  });
-});
+    expect(respond).toHaveBeenCalledWith(
+      false,
+      undefined,
+      expect.objectContaining({ message: "repoUrl required" }),
+    );
   });
 });

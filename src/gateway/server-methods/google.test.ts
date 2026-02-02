@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 // Hoist the mock variable
 const { mockLoadConfig, mockDeployInstance } = vi.hoisted(() => ({
   mockLoadConfig: vi.fn(),
-  mockDeployInstance: vi.fn().mockImplementation(function(cb: any) {
+  mockDeployInstance: vi.fn().mockImplementation(function (cb: any) {
     cb({ step: "ready", message: "Done" });
     return Promise.resolve();
   }),
@@ -16,7 +16,7 @@ vi.mock("../../config/config.js", () => ({
 // IMPORTANT: Mocking the class constructor using a regular function
 vi.mock("../../infra/google-compute.js", () => {
   return {
-    GoogleComputeService: vi.fn().mockImplementation(function(this: any) {
+    GoogleComputeService: vi.fn().mockImplementation(function (this: any) {
       this.deployInstance = mockDeployInstance;
     }),
   };
@@ -52,8 +52,9 @@ describe("google.deploy", () => {
     expect(GoogleComputeService).toHaveBeenCalledWith("test-proj", "{}", "us-west1-a", "e2-small");
     expect(respond).toHaveBeenCalledWith(true, { started: true });
     // Verify broadcast callback (simulated in mock)
-    expect(broadcast).toHaveBeenCalledWith("google.deploy.status", { step: "ready", message: "Done" });
-  });
-});
+    expect(broadcast).toHaveBeenCalledWith("google.deploy.status", {
+      step: "ready",
+      message: "Done",
+    });
   });
 });

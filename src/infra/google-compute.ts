@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
-import { loadConfig } from "../config/config.js";
+
 import { getStartupScript } from "./provisioning.js";
 
 export interface GoogleDeploymentStatus {
@@ -81,16 +81,14 @@ export class GoogleComputeService {
       ]);
 
       // Set project
-      await this.runCommand("gcloud", [
-        "config",
-        "set",
-        "project",
-        this.projectId,
-      ]);
+      await this.runCommand("gcloud", ["config", "set", "project", this.projectId]);
 
       // 2. Deploy Instance
       const instanceName = `moltbot-${Date.now()}`;
-      onStatus({ step: "launching", message: `Creating instance ${instanceName} (${this.machineType}) in ${this.zone}...` });
+      onStatus({
+        step: "launching",
+        message: `Creating instance ${instanceName} (${this.machineType}) in ${this.zone}...`,
+      });
 
       // Create instance (Ubuntu 24.04 LTS equivalent or similar)
       // Using standard image family for ubuntu-2204-lts as 24.04 might need specific name
@@ -124,7 +122,6 @@ export class GoogleComputeService {
         step: "ready",
         message: `Instance deployed! IP: ${ipOutput}`,
       });
-
     } catch (error: any) {
       onStatus({ step: "error", message: `Google Cloud deployment error: ${error.message}` });
       throw error;

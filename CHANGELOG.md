@@ -2,6 +2,16 @@
 
 Docs: https://docs.openclaw.ai
 
+## 2026.2.1
+
+### Highlights
+- **New Models**: Added support for Kimi (Moonshot), Qwen Portal, Xiaomi MiMo, Ollama, and Venice.
+- **Extensions**: Introduced `cli-token-discovery` extension for easier token management.
+
+### Changes
+- **Models**: Implicit provider resolution now supports Kimi, Qwen, Xiaomi, Ollama, and Venice.
+- **Extensions**: Added `cli-token-discovery` to scan and manage tokens.
+
 ## 2026.1.29
 Status: stable.
 

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { GoogleComputeService } from "./google-compute.js";
-import child_process from "node:child_process";
+
 import fs from "node:fs";
 
 // Hoist the mock function
@@ -10,7 +10,7 @@ const { mockSpawn } = vi.hoisted(() => ({ mockSpawn: vi.fn() }));
 vi.mock("node:child_process", async (importOriginal) => {
   const actual = await importOriginal();
   return {
-    ...actual as any,
+    ...(actual as any),
     default: { spawn: mockSpawn },
     spawn: mockSpawn,
   };
@@ -33,7 +33,11 @@ describe("GoogleComputeService", () => {
     vi.resetAllMocks();
     // Default mock implementation for spawn to succeed
     mockSpawn.mockReturnValue({
-      stdout: { on: (evt: string, cb: (d: string) => void) => { if (evt === "data") cb("success output"); } },
+      stdout: {
+        on: (evt: string, cb: (d: string) => void) => {
+          if (evt === "data") cb("success output");
+        },
+      },
       stderr: { on: vi.fn() },
       on: (evt: string, cb: (code: number) => void) => {
         if (evt === "close") cb(0);
@@ -52,7 +56,9 @@ describe("GoogleComputeService", () => {
   });
 
   it("should throw on invalid zone format", () => {
-    expect(() => new GoogleComputeService("proj", "{}", "invalid zone", "e2-micro")).toThrow(/Invalid zone format/);
+    expect(() => new GoogleComputeService("proj", "{}", "invalid zone", "e2-micro")).toThrow(
+      /Invalid zone format/,
+    );
   });
 
   it("should execute deployment sequence", async () => {
@@ -66,7 +72,9 @@ describe("GoogleComputeService", () => {
     expect(mockSpawn).toHaveBeenCalled();
 
     // Verify gcloud create args
-    const createCall = mockSpawn.mock.calls.find((call: any) => call[1].includes("instances") && call[1].includes("create"));
+    const createCall = mockSpawn.mock.calls.find(
+      (call: any) => call[1].includes("instances") && call[1].includes("create"),
+    );
     expect(createCall).toBeDefined();
     const args = createCall[1];
     expect(args).toContain("--zone=us-central1-a");

@@ -436,12 +436,13 @@ const FIELD_HELP: Record<string, string> = {
   "tools.message.broadcast.enabled": "Enable broadcast action (default: true).",
   "tools.web.search.enabled": "Enable the web_search tool (requires a provider API key).",
   "tools.web.search.provider": 'Search provider ("brave" or "perplexity").',
-  "tools.web.search.apiKey": "Brave Search API key (fallback: BRAVE_API_KEY env var).",
+  "tools.web.search.apiKey":
+    "Brave Search API Key (fallback: BRAVE_API_KEY env var). [Get API Key](https://brave.com/search/api/)",
   "tools.web.search.maxResults": "Default number of results to return (1-10).",
   "tools.web.search.timeoutSeconds": "Timeout in seconds for web_search requests.",
   "tools.web.search.cacheTtlMinutes": "Cache TTL in minutes for web_search results.",
   "tools.web.search.perplexity.apiKey":
-    "Perplexity or OpenRouter API key (fallback: PERPLEXITY_API_KEY or OPENROUTER_API_KEY env var).",
+    "Perplexity or OpenRouter API key. [Get Perplexity Key](https://www.perplexity.ai/settings/api) or [Get OpenRouter Key](https://openrouter.ai/keys).",
   "tools.web.search.perplexity.baseUrl":
     "Perplexity base URL override (default: https://openrouter.ai/api/v1 or https://api.perplexity.ai).",
   "tools.web.search.perplexity.model":
@@ -455,7 +456,7 @@ const FIELD_HELP: Record<string, string> = {
   "tools.web.fetch.readability":
     "Use Readability to extract main content from HTML (fallbacks to basic HTML cleanup).",
   "tools.web.fetch.firecrawl.enabled": "Enable Firecrawl fallback for web_fetch (if configured).",
-  "tools.web.fetch.firecrawl.apiKey": "Firecrawl API key (fallback: FIRECRAWL_API_KEY env var).",
+  "tools.web.fetch.firecrawl.apiKey": "Firecrawl API key. [Get API Key](https://firecrawl.dev).",
   "tools.web.fetch.firecrawl.baseUrl":
     "Firecrawl base URL (e.g. https://api.firecrawl.dev or custom endpoint).",
   "tools.web.fetch.firecrawl.onlyMainContent":
@@ -478,7 +479,8 @@ const FIELD_HELP: Record<string, string> = {
   "channels.mattermost.oncharPrefixes": 'Trigger prefixes for onchar mode (default: [">", "!"]).',
   "channels.mattermost.requireMention":
     "Require @mention in channels before responding (default: true).",
-  "auth.profiles": "Named auth profiles (provider + mode + optional email).",
+  "auth.profiles":
+    "Named auth profiles (provider + mode + optional email). See [Provider Setup](https://docs.openclaw.ai/providers) for details.",
   "auth.order": "Ordered auth profile IDs per provider (used for automatic failover).",
   "auth.cooldowns.billingBackoffHours":
     "Base backoff (hours) when a profile fails due to billing/insufficient credits (default: 5).",
@@ -507,7 +509,8 @@ const FIELD_HELP: Record<string, string> = {
   "agents.defaults.memorySearch.provider": 'Embedding provider ("openai", "gemini", or "local").',
   "agents.defaults.memorySearch.remote.baseUrl":
     "Custom base URL for remote embeddings (OpenAI-compatible proxies or Gemini overrides).",
-  "agents.defaults.memorySearch.remote.apiKey": "Custom API key for the remote embedding provider.",
+  "agents.defaults.memorySearch.remote.apiKey":
+    "Custom API key for the remote embedding provider. [Get OpenAI Key](https://platform.openai.com/api-keys) or [Google AI Studio](https://aistudio.google.com/app/apikey).",
   "agents.defaults.memorySearch.remote.headers":
     "Extra headers for remote embeddings (merged; remote overrides OpenAI headers).",
   "agents.defaults.memorySearch.remote.batch.enabled":
@@ -523,7 +526,7 @@ const FIELD_HELP: Record<string, string> = {
   "agents.defaults.memorySearch.local.modelPath":
     "Local GGUF model path or hf: URI (node-llama-cpp).",
   "agents.defaults.memorySearch.fallback":
-    'Fallback provider when embeddings fail ("openai", "gemini", "local", or "none").',
+    'Fallback provider when embeddings fail ("openai", "gemini", "local", or "none"). [Learn more](https://docs.openclaw.ai/memory).',
   "agents.defaults.memorySearch.store.path":
     "SQLite index path (default: ~/.openclaw/memory/{agentId}.sqlite).",
   "agents.defaults.memorySearch.store.vector.enabled":

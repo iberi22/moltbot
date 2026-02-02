@@ -387,12 +387,22 @@ export async function installSkill(params: SkillInstallRequest): Promise<SkillIn
     if (isWin) {
       if (scoopExe) {
         const result = await runCommandWithTimeout([scoopExe, "install", "uv"], { timeoutMs });
-        if (result.code !== 0) return { ok: false, message: "Failed to install uv (scoop)", ...result };
+        if (result.code !== 0)
+          return { ok: false, message: "Failed to install uv (scoop)", ...result };
       } else if (chocoExe) {
-        const result = await runCommandWithTimeout([chocoExe, "install", "-y", "uv"], { timeoutMs });
-        if (result.code !== 0) return { ok: false, message: "Failed to install uv (choco)", ...result };
+        const result = await runCommandWithTimeout([chocoExe, "install", "-y", "uv"], {
+          timeoutMs,
+        });
+        if (result.code !== 0)
+          return { ok: false, message: "Failed to install uv (choco)", ...result };
       } else {
-        return { ok: false, message: "uv not installed (install via scoop or choco)", stdout: "", stderr: "", code: null };
+        return {
+          ok: false,
+          message: "uv not installed (install via scoop or choco)",
+          stdout: "",
+          stderr: "",
+          code: null,
+        };
       }
     } else if (brewExe) {
       const brewResult = await runCommandWithTimeout([brewExe, "install", "uv"], {
@@ -442,12 +452,22 @@ export async function installSkill(params: SkillInstallRequest): Promise<SkillIn
     if (isWin) {
       if (scoopExe) {
         const result = await runCommandWithTimeout([scoopExe, "install", "go"], { timeoutMs });
-        if (result.code !== 0) return { ok: false, message: "Failed to install go (scoop)", ...result };
+        if (result.code !== 0)
+          return { ok: false, message: "Failed to install go (scoop)", ...result };
       } else if (chocoExe) {
-        const result = await runCommandWithTimeout([chocoExe, "install", "-y", "golang"], { timeoutMs });
-        if (result.code !== 0) return { ok: false, message: "Failed to install go (choco)", ...result };
+        const result = await runCommandWithTimeout([chocoExe, "install", "-y", "golang"], {
+          timeoutMs,
+        });
+        if (result.code !== 0)
+          return { ok: false, message: "Failed to install go (choco)", ...result };
       } else {
-        return { ok: false, message: "go not installed (install via scoop or choco)", stdout: "", stderr: "", code: null };
+        return {
+          ok: false,
+          message: "go not installed (install via scoop or choco)",
+          stdout: "",
+          stderr: "",
+          code: null,
+        };
       }
     } else if (brewExe) {
       const brewResult = await runCommandWithTimeout([brewExe, "install", "go"], {

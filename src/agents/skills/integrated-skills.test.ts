@@ -26,13 +26,13 @@ describe("Integrated Skills Loading", () => {
     expect(skillNames).toContain("cloudflare");
 
     // Verify basic properties of a few key skills
-    const jules = entries.find(e => e.skill.name === "jules");
+    const jules = entries.find((e) => e.skill.name === "jules");
     expect(jules).toBeDefined();
 
-    const cloudflare = entries.find(e => e.skill.name === "cloudflare");
+    const cloudflare = entries.find((e) => e.skill.name === "cloudflare");
     expect(cloudflare).toBeDefined();
 
-    const supabase = entries.find(e => e.skill.name === "supabase");
+    const supabase = entries.find((e) => e.skill.name === "supabase");
     expect(supabase).toBeDefined();
   });
 });

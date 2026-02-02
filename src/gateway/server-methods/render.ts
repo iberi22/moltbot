@@ -11,7 +11,7 @@ function getRenderService(overrides?: { serviceId?: string }) {
 
   if (!apiKey) {
     throw new Error(
-      "Render credentials not configured. Please add gateway.render section to moltbot.json."
+      "Render credentials not configured. Please add gateway.render section to moltbot.json.",
     );
   }
 

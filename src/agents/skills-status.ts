@@ -80,7 +80,8 @@ function selectPreferredInstallSpec(
 ): { spec: SkillInstallSpec; index: number } | undefined {
   if (install.length === 0) return undefined;
   const indexed = install.map((spec, index) => ({ spec, index }));
-  const findKind = (kind: SkillInstallSpec["kind"]) => indexed.find((item) => item.spec.kind === kind);
+  const findKind = (kind: SkillInstallSpec["kind"]) =>
+    indexed.find((item) => item.spec.kind === kind);
 
   const isWin = process.platform === "win32";
 

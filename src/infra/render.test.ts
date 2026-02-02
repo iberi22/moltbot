@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { RenderService } from "./render.js";
 
 const fetchMock = vi.fn();
@@ -25,7 +25,7 @@ describe("RenderService", () => {
       expect.objectContaining({
         method: "POST",
         headers: expect.objectContaining({ Authorization: "Bearer key" }),
-      })
+      }),
     );
     expect(onStatus).toHaveBeenCalledWith(expect.objectContaining({ step: "ready" }));
   });
@@ -54,7 +54,7 @@ describe("RenderService", () => {
       expect.objectContaining({
         method: "POST",
         body: expect.stringContaining("https://github.com/me/repo"),
-      })
+      }),
     );
     expect(onStatus).toHaveBeenCalledWith(expect.objectContaining({ step: "ready" }));
   });

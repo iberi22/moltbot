@@ -6,6 +6,7 @@ import {
   humanize,
   isSensitivePath,
   pathKey,
+  renderMarkdown,
   schemaType,
   type JsonSchema,
 } from "./config-form.shared";
@@ -86,7 +87,7 @@ export function renderNode(params: {
       return html`
         <div class="cfg-field">
           ${showLabel ? html`<label class="cfg-field__label">${label}</label>` : nothing}
-          ${help ? html`<div class="cfg-field__help">${help}</div>` : nothing}
+          ${help ? html`<div class="cfg-field__help">${renderMarkdown(help)}</div>` : nothing}
           <div class="cfg-segmented">
             ${literals.map((lit, idx) => html`
               <button
@@ -145,7 +146,7 @@ export function renderNode(params: {
       return html`
         <div class="cfg-field">
           ${showLabel ? html`<label class="cfg-field__label">${label}</label>` : nothing}
-          ${help ? html`<div class="cfg-field__help">${help}</div>` : nothing}
+          ${help ? html`<div class="cfg-field__help">${renderMarkdown(help)}</div>` : nothing}
           <div class="cfg-segmented">
             ${options.map((opt) => html`
               <button
@@ -181,7 +182,7 @@ export function renderNode(params: {
       <label class="cfg-toggle-row ${disabled ? 'disabled' : ''}">
         <div class="cfg-toggle-row__content">
           <span class="cfg-toggle-row__label">${label}</span>
-          ${help ? html`<span class="cfg-toggle-row__help">${help}</span>` : nothing}
+          ${help ? html`<span class="cfg-toggle-row__help">${renderMarkdown(help)}</span>` : nothing}
         </div>
         <div class="cfg-toggle">
           <input
@@ -239,7 +240,7 @@ function renderTextInput(params: {
   return html`
     <div class="cfg-field">
       ${showLabel ? html`<label class="cfg-field__label">${label}</label>` : nothing}
-      ${help ? html`<div class="cfg-field__help">${help}</div>` : nothing}
+      ${help ? html`<div class="cfg-field__help">${renderMarkdown(help)}</div>` : nothing}
       <div class="cfg-input-wrap">
         <input
           type=${isSensitive ? "password" : inputType}
@@ -300,7 +301,7 @@ function renderNumberInput(params: {
   return html`
     <div class="cfg-field">
       ${showLabel ? html`<label class="cfg-field__label">${label}</label>` : nothing}
-      ${help ? html`<div class="cfg-field__help">${help}</div>` : nothing}
+      ${help ? html`<div class="cfg-field__help">${renderMarkdown(help)}</div>` : nothing}
       <div class="cfg-number">
         <button
           type="button"
@@ -354,7 +355,7 @@ function renderSelect(params: {
   return html`
     <div class="cfg-field">
       ${showLabel ? html`<label class="cfg-field__label">${label}</label>` : nothing}
-      ${help ? html`<div class="cfg-field__help">${help}</div>` : nothing}
+      ${help ? html`<div class="cfg-field__help">${renderMarkdown(help)}</div>` : nothing}
       <select
         class="cfg-select"
         ?disabled=${disabled}
@@ -444,7 +445,7 @@ function renderObject(params: {
         <span class="cfg-object__title">${label}</span>
         <span class="cfg-object__chevron">${icons.chevronDown}</span>
       </summary>
-      ${help ? html`<div class="cfg-object__help">${help}</div>` : nothing}
+      ${help ? html`<div class="cfg-object__help">${renderMarkdown(help)}</div>` : nothing}
       <div class="cfg-object__content">
         ${sorted.map(([propKey, node]) =>
           renderNode({
@@ -518,7 +519,7 @@ function renderArray(params: {
           Add
         </button>
       </div>
-      ${help ? html`<div class="cfg-array__help">${help}</div>` : nothing}
+      ${help ? html`<div class="cfg-array__help">${renderMarkdown(help)}</div>` : nothing}
 
       ${arr.length === 0 ? html`
         <div class="cfg-array__empty">

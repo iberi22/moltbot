@@ -439,6 +439,17 @@ export async function resolveImplicitProviders(params: {
     };
   }
 
+  // Auto-enable google-gemini-cli if OAuth profiles exist
+  const geminiProfiles = listProfilesForProvider(authStore, "google-gemini-cli");
+  if (geminiProfiles.length > 0) {
+    providers["google-gemini-cli"] = {
+      baseUrl: "https://generativelanguage.googleapis.com/v1beta",
+      api: "google-gemini-cli",
+      models: [], // Uses built-in models from pi-ai
+      apiKey: "gemini-oauth-placeholder",
+    };
+  }
+
   const xiaomiKey =
     resolveEnvApiKeyVarName("xiaomi") ??
     resolveApiKeyFromProfiles({ provider: "xiaomi", store: authStore });

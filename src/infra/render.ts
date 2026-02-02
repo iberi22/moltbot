@@ -1,5 +1,3 @@
-import { loadConfig } from "../config/config.js";
-
 export interface DeploymentStatus {
   step: "idle" | "launching" | "ready" | "error";
   message: string;
@@ -32,7 +30,9 @@ export class RenderService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Render API failed: ${response.status} ${response.statusText} - ${errorText}`);
+        throw new Error(
+          `Render API failed: ${response.status} ${response.statusText} - ${errorText}`,
+        );
       }
 
       const data = await response.json();
@@ -71,14 +71,16 @@ export class RenderService {
         headers: {
           Authorization: `Bearer ${this.apiKey}`,
           "Content-Type": "application/json",
-          "Accept": "application/json",
+          Accept: "application/json",
         },
         body: JSON.stringify(body),
       });
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Render API failed: ${response.status} ${response.statusText} - ${errorText}`);
+        throw new Error(
+          `Render API failed: ${response.status} ${response.statusText} - ${errorText}`,
+        );
       }
 
       const data = await response.json();

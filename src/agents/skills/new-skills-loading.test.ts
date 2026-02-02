@@ -19,10 +19,12 @@ describe("New Skills Loading", () => {
     expect(skillNames).toContain("context-manager");
     expect(skillNames).toContain("admin-assistant");
 
-    const contextManager = entries.find(e => e.skill.name === "context-manager");
+    const contextManager = entries.find((e) => e.skill.name === "context-manager");
     expect(contextManager?.skill.description).toContain("Manage separate chat contexts");
 
-    const adminAssistant = entries.find(e => e.skill.name === "admin-assistant");
-    expect(adminAssistant?.skill.description).toContain("specialized agent for administrative tasks");
+    const adminAssistant = entries.find((e) => e.skill.name === "admin-assistant");
+    expect(adminAssistant?.skill.description).toContain(
+      "specialized agent for administrative tasks",
+    );
   });
 });

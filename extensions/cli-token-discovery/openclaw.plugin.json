@@ -1,0 +1,78 @@
+{
+  "id": "cli-token-discovery",
+  "name": "CLI Token Auto-Discovery",
+  "description": "Automatically discovers and imports auth tokens from installed AI CLIs (kimi-cli, codex-cli, qwen-cli, gemini-cli)",
+  "version": "2026.1.29",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "scanOnStartup": {
+        "type": "boolean",
+        "default": true,
+        "description": "Run discovery scan on gateway startup"
+      },
+      "autoImport": {
+        "type": "boolean",
+        "default": true,
+        "description": "Automatically import discovered tokens"
+      },
+      "validateTokens": {
+        "type": "boolean",
+        "default": true,
+        "description": "Validate tokens before import with lightweight API ping"
+      },
+      "rotationStrategy": {
+        "type": "string",
+        "enum": ["round-robin", "least-used", "priority", "health-based"],
+        "default": "round-robin",
+        "description": "Strategy for distributing load across multiple tokens"
+      },
+      "cliSources": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kimi-cli": {
+            "type": "object",
+            "properties": {
+              "enabled": { "type": "boolean", "default": true },
+              "priority": { "type": "number", "default": 1 }
+            }
+          },
+          "codex-cli": {
+            "type": "object",
+            "properties": {
+              "enabled": { "type": "boolean", "default": true },
+              "priority": { "type": "number", "default": 2 }
+            }
+          },
+          "qwen-cli": {
+            "type": "object",
+            "properties": {
+              "enabled": { "type": "boolean", "default": true },
+              "priority": { "type": "number", "default": 3 }
+            }
+          },
+          "gemini-cli": {
+            "type": "object",
+            "properties": {
+              "enabled": { "type": "boolean", "default": true },
+              "priority": { "type": "number", "default": 4 }
+            }
+          }
+        }
+      }
+    }
+  },
+  "uiHints": {
+    "scanOnStartup": { "label": "Scan on Startup", "order": 1 },
+    "autoImport": { "label": "Auto-Import Tokens", "order": 2 },
+    "validateTokens": { "label": "Validate Before Import", "order": 3 },
+    "rotationStrategy": { "label": "Rotation Strategy", "order": 4 },
+    "cliSources": { "label": "CLI Sources", "order": 5 },
+    "cliSources.kimi-cli": { "label": "Kimi CLI" },
+    "cliSources.codex-cli": { "label": "Codex CLI" },
+    "cliSources.qwen-cli": { "label": "Qwen CLI" },
+    "cliSources.gemini-cli": { "label": "Gemini CLI" }
+  }
+}

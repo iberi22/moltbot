@@ -1,0 +1,11 @@
+{
+  "name": "@openclaw/cli-token-discovery",
+  "version": "2026.1.29",
+  "type": "module",
+  "description": "Auto-discover and import authentication tokens from installed AI CLIs",
+  "openclaw": {
+    "extensions": [
+      "./index.ts"
+    ]
+  }
+}

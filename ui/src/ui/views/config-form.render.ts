@@ -4,6 +4,7 @@ import { icons } from "../icons";
 import {
   hintForPath,
   humanize,
+  renderMarkdown,
   schemaType,
   type JsonSchema,
 } from "./config-form.shared";
@@ -221,7 +222,7 @@ export function renderConfigForm(props: ConfigFormProps) {
                   <div class="config-section-card__titles">
                     <h3 class="config-section-card__title">${label}</h3>
                     ${description
-                      ? html`<p class="config-section-card__desc">${description}</p>`
+                      ? html`<p class="config-section-card__desc">${renderMarkdown(description)}</p>`
                       : nothing}
                   </div>
                 </div>
@@ -253,7 +254,7 @@ export function renderConfigForm(props: ConfigFormProps) {
                   <div class="config-section-card__titles">
                     <h3 class="config-section-card__title">${meta.label}</h3>
                     ${meta.description
-                      ? html`<p class="config-section-card__desc">${meta.description}</p>`
+                      ? html`<p class="config-section-card__desc">${renderMarkdown(meta.description)}</p>`
                       : nothing}
                   </div>
                 </div>

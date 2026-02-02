@@ -12,7 +12,7 @@ function getEc2Service() {
 
   if (!accessKeyId || !secretAccessKey) {
     throw new Error(
-      "AWS EC2 credentials not configured. Please add gateway.ec2 section to moltbot.json or set AWS_EC2_ACCESS_KEY_ID/AWS_EC2_SECRET_ACCESS_KEY env vars."
+      "AWS EC2 credentials not configured. Please add gateway.ec2 section to moltbot.json or set AWS_EC2_ACCESS_KEY_ID/AWS_EC2_SECRET_ACCESS_KEY env vars.",
     );
   }
 

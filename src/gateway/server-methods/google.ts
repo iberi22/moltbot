@@ -13,7 +13,7 @@ function getGoogleService(overrides?: { zone?: string; machineType?: string }) {
 
   if (!projectId || !keyJson) {
     throw new Error(
-      "Google Cloud credentials not configured. Please add gateway.google section to moltbot.json."
+      "Google Cloud credentials not configured. Please add gateway.google section to moltbot.json.",
     );
   }
 

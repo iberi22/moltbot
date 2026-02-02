@@ -1,4 +1,5 @@
-import type { ConfigUiHints } from "../types";
+
+import { html, type TemplateResult } from "lit";
 
 export type JsonSchema = {
   type?: string | string[];
@@ -15,6 +16,26 @@ export type JsonSchema = {
   allOf?: JsonSchema[];
   nullable?: boolean;
 };
+
+export function renderMarkdown(text?: string): TemplateResult {
+  if (!text) return html``;
+  // Split by markdown link pattern [label](url)
+  const parts = text.split(/(\[[^\]]+\]\([^)]+\))/g);
+  return html`${parts.map((part) => {
+    const match = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+    if (match) {
+      return html`<a
+        href="${match[2]}"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="cfg-link"
+        @click=${(e: Event) => e.stopPropagation()}
+        >${match[1]}</a
+      >`;
+    }
+    return html`${part}`;
+  })}`;
+}
 
 export function schemaType(schema: JsonSchema): string | undefined {
   if (!schema) return undefined;
@@ -89,3 +110,4 @@ export function isSensitivePath(path: Array<string | number>): boolean {
     key.endsWith("key")
   );
 }
+

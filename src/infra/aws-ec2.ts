@@ -17,7 +17,14 @@ export interface AwsCredentials {
 }
 
 export interface DeploymentStatus {
-  step: "idle" | "creating-key" | "creating-security-group" | "launching" | "booting" | "ready" | "error";
+  step:
+    | "idle"
+    | "creating-key"
+    | "creating-security-group"
+    | "launching"
+    | "booting"
+    | "ready"
+    | "error";
   message: string;
   instanceId?: string;
   publicIp?: string;
@@ -46,13 +53,16 @@ export class AwsEc2Service {
       const keyMaterial = keyResponse.KeyMaterial;
 
       // 2. Setup Security Group
-      onStatus({ step: "creating-security-group", message: "Configurando firewall (puertos 22, 80, 443)..." });
+      onStatus({
+        step: "creating-security-group",
+        message: "Configurando firewall (puertos 22, 80, 443)...",
+      });
       const sgName = `moltbot-sg-${Date.now()}`;
       const sgResponse = await this.client.send(
         new CreateSecurityGroupCommand({
           GroupName: sgName,
           Description: "Security group for Moltbot VPS",
-        })
+        }),
       );
       const groupId = sgResponse.GroupId!;
 
@@ -79,7 +89,7 @@ export class AwsEc2Service {
               IpRanges: [{ CidrIp: "0.0.0.0/0" }], // HTTPS
             },
           ],
-        })
+        }),
       );
 
       const cfg = loadConfig();
@@ -97,24 +107,29 @@ export class AwsEc2Service {
           MinCount: 1,
           SecurityGroupIds: [groupId],
           UserData: userData,
-        })
+        }),
       );
 
       const instanceId = runResponse.Instances![0].InstanceId!;
-      onStatus({ step: "booting", message: "Esperando a que el servidor asigne una IP...", instanceId });
+      onStatus({
+        step: "booting",
+        message: "Esperando a que el servidor asigne una IP...",
+        instanceId,
+      });
 
       // 4. Poll for IP
       let publicIp: string | undefined;
       for (let i = 0; i < 10; i++) {
         await new Promise((resolve) => setTimeout(resolve, 5000));
         const descResponse = await this.client.send(
-          new DescribeInstancesCommand({ InstanceIds: [instanceId] })
+          new DescribeInstancesCommand({ InstanceIds: [instanceId] }),
         );
         publicIp = descResponse.Reservations![0].Instances![0].PublicIpAddress;
         if (publicIp) break;
       }
 
-      if (!publicIp) throw new Error("No se pudo obtener la IP pública después de varios intentos.");
+      if (!publicIp)
+        throw new Error("No se pudo obtener la IP pública después de varios intentos.");
 
       onStatus({
         step: "ready",
@@ -133,8 +148,9 @@ export class AwsEc2Service {
   }
 
   async describeInstances(instanceIds?: string[]) {
-    const response = await this.client.send(new DescribeInstancesCommand({ InstanceIds: instanceIds }));
+    const response = await this.client.send(
+      new DescribeInstancesCommand({ InstanceIds: instanceIds }),
+    );
     return response.Reservations?.flatMap((r) => r.Instances || []) || [];
   }
 }
-
